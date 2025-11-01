@@ -24,30 +24,28 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+# Read configuration from environment
+api_key = os.getenv("JULES_API_KEY")
+base_url = os.getenv("JULES_API_BASE_URL", "https://jules.googleapis.com")
+api_version = os.getenv("JULES_API_VERSION", "v1alpha")
+poll_interval = int(os.getenv("WORKER_POLL_INTERVAL", "5"))
+stuck_timeout = int(os.getenv("WORKER_STUCK_TIMEOUT", "300"))
+
 # Create FastMCP server
 mcp = FastMCP("Jules MCP Server")
 
-# Global state (initialized on startup)
+# Global state (will be initialized in main)
 jules_client: Optional[JulesAPIClient] = None
 worker_manager: Optional[WorkerManager] = None
 
 
-# Lifecycle hooks
-@mcp.server.request_handler
-async def handle_initialize(request):
-    """Initialize Jules client and worker manager on server startup"""
+async def initialize_server():
+    """Initialize Jules client and worker manager"""
     global jules_client, worker_manager
 
-    # Read configuration from environment
-    api_key = os.getenv("JULES_API_KEY")
     if not api_key:
         logger.error("JULES_API_KEY not found in environment")
         raise Exception("JULES_API_KEY environment variable is required")
-
-    base_url = os.getenv("JULES_API_BASE_URL", "https://jules.googleapis.com")
-    api_version = os.getenv("JULES_API_VERSION", "v1alpha")
-    poll_interval = int(os.getenv("WORKER_POLL_INTERVAL", "5"))
-    stuck_timeout = int(os.getenv("WORKER_STUCK_TIMEOUT", "300"))
 
     # Initialize Jules client
     jules_client = JulesAPIClient(
@@ -68,15 +66,18 @@ async def handle_initialize(request):
 
     logger.info("Jules MCP Server initialized")
 
-    # Return the default initialize response
-    return {
-        "protocolVersion": "2024-11-05",
-        "capabilities": {},
-        "serverInfo": {
-            "name": "Jules MCP Server",
-            "version": "0.1.0"
-        }
-    }
+
+async def shutdown_server():
+    """Shutdown Jules client and worker manager"""
+    global jules_client, worker_manager
+
+    if worker_manager:
+        await worker_manager.stop()
+
+    if jules_client:
+        await jules_client.close()
+
+    logger.info("Jules MCP Server shutdown complete")
 
 
 # MCP Tools
