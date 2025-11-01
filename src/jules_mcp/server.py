@@ -418,6 +418,40 @@ Make sure the plan is sound before approving."""
 
 def main():
     """Entry point for MCP server"""
+    import signal
+    import atexit
+
+    # Initialize server synchronously using asyncio
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+
+    # Run initialization
+    try:
+        loop.run_until_complete(initialize_server())
+    except Exception as e:
+        logger.error(f"Failed to initialize server: {e}")
+        raise
+
+    # Register shutdown handler
+    def cleanup():
+        try:
+            loop.run_until_complete(shutdown_server())
+        except Exception as e:
+            logger.error(f"Error during shutdown: {e}")
+        finally:
+            loop.close()
+
+    atexit.register(cleanup)
+
+    # Handle SIGTERM gracefully
+    def signal_handler(signum, frame):
+        logger.info("Received signal, shutting down...")
+        cleanup()
+        sys.exit(0)
+
+    signal.signal(signal.SIGTERM, signal_handler)
+    signal.signal(signal.SIGINT, signal_handler)
+
     try:
         # Run server in stdio mode
         mcp.run(transport="stdio")
@@ -426,6 +460,8 @@ def main():
     except Exception as e:
         logger.error(f"Server error: {e}")
         raise
+    finally:
+        cleanup()
 
 
 if __name__ == "__main__":
