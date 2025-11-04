@@ -892,10 +892,36 @@ This ensures proper handoff between agents and maintains AI assistance quality a
 
 ---
 
+## Question Handling
+
+Claude can both:
+1. **Answer questions directly** using its knowledge and reasoning
+2. **Pass through to Jules MCP** when questions require Jules' specialized implementation capabilities
+
+**Question Routing Logic**:
+- **Claude handles**: Architecture questions, planning, code review, explanations
+- **Jules handles**: Implementation tasks, code generation, specific coding problems
+- **Collaborative**: Complex tasks that require both planning and implementation
+
+**Enhanced Question Answering**:
+- Claude has access to comprehensive Jules knowledge base
+- Can provide both direct answers and Jules-specific prompt recommendations
+- Maintains context across multiple questions for better assistance
+- Can suggest optimal Jules prompts based on question analysis
+
+**Knowledge Base Integration**:
+- Access to `JULES_KNOWLEDGE_BASE.md` with 250+ community-curated prompts
+- Integration with Google Jules Awesome List patterns
+- Real-world implementation examples across 20+ categories
+- Performance benchmarks and optimization strategies
+
+---
+
 **Status**: ✅ ACTIVE
 **Last Updated**: 2025-11-04
-**Version**: 1.0
+**Version**: 1.1
 **Next Sync Check**: 2025-11-05 (24-hour requirement)
 **Best Practices Compliance**: ✅ Current with 2025 MCP and AI standards
 **Jules Integration**: ✅ Google Jules API fully integrated
 **Cost Optimization**: ✅ Intelligent cost tracking implemented
+**Knowledge Base**: ✅ Community-curated prompts integrated
