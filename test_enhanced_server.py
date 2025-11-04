@@ -12,7 +12,7 @@ from pathlib import Path
 # Add src to path
 sys.path.insert(0, str(Path(__file__).parent / "src"))
 
-from src.jules_mcp.request_patterns import ExternalAPIManager, WebSearchManager, RequestPatternManager
+from jules_mcp.request_patterns import ExternalAPIManager, WebSearchManager, RequestPatternManager
 
 
 async def test_web_search():
