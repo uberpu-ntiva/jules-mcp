@@ -57,6 +57,91 @@ This document provides the specific protocols and conventions for working on the
 
 Failure to comply with the protocol may result in excessive costs, security vulnerabilities, and MCP standard violations.
 
+---
+
+## Claude + Jules Coordination
+
+**IMPORTANT**: See `/workspace/cmhjwelrp01t8r7im3ysx2nl8/jules-mcp/JULES.md` for complete Jules AI guidelines and coordination rules.
+
+### Role Division
+
+**Claude (Orchestrator)**:
+- Architecture design and planning
+- Create detailed `planning.md` with specifications
+- Orchestrate Jules via MCP tools (runs MCP server locally)
+- Provide clarifications when Jules asks questions
+- Coordinate cross-service changes
+- **No separate API key needed** - Claude runs Jules MCP server directly
+
+**Jules (Implementer)**:
+- Code implementation based on Claude's planning
+- Bug fixing and refactoring
+- Test writing (minimum 80% coverage)
+- **Self-review before marking complete** (Jules reviews own code)
+- Ask clarifying questions when requirements are ambiguous
+
+**Human (Final Approver)**:
+- Final review and approval of all changes
+- Merge to main branch
+- Deploy to production
+- Resolve any conflicts between Claude and Jules
+
+### Workflow Pattern
+
+```
+1. Claude designs → planning.md
+2. Claude calls Jules MCP → jules_create_worker(task + rules)
+3. Jules implements + self-reviews
+4. Jules marks complete
+5. Human reviews + merges
+```
+
+### Authentication
+
+```bash
+# Only Jules API key is needed
+JULES_API_KEY=AQ.Ab8RN6IjejxlqvM0TAGt5bhWZeMJf9PFwuKBs-dqj9rARpcOPA
+
+# Claude does NOT need separate key
+# Claude runs the Jules MCP server locally and executes MCP tools directly
+```
+
+### Task Creation Template
+
+When Claude creates a Jules worker, include Jules guidelines:
+
+```python
+await jules_mcp.call_tool("jules_create_worker", {
+    "task_description": """
+    [Feature/bug description]
+
+    ## Jules Guidelines (REQUIRED)
+    See /workspace/cmhjwelrp01t8r7im3ysx2nl8/jules-mcp/JULES.md
+
+    SELF-REVIEW REQUIRED:
+    ✅ Code quality, security, tests, performance
+    ✅ All edge cases handled
+    ✅ Follows existing patterns
+    ✅ Ready for human review
+
+    ## Reference Documents
+    - planning.md: Complete specifications
+    - src/existing/similar.ts: Pattern to follow
+    """,
+    "source": "sources/github/company/repo",
+    "title": "Feature name"
+})
+```
+
+### Key Principles
+
+1. **Jules self-reviews** - No need for Claude to review Jules' code
+2. **Separate branches** - Claude works on design branch, Jules on implementation branch
+3. **Clear handoffs** - Claude passes complete planning to Jules
+4. **Human final approval** - All merges require human review
+
+---
+
 ## Development Workflow
 
 **MCP Server Development Requirements**:
