@@ -583,7 +583,7 @@ class JulesAPITester:
         """Test error handling"""
         try:
             # Test invalid endpoint
-            result = self._make_request('INVALID', '/invalid/endpoint')
+            result = self.client._make_request('INVALID', '/invalid/endpoint')
 
             if result['status'] != 'error':
                 return {
