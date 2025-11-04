@@ -317,16 +317,23 @@ You are the final validator because:
 - **Write Documentation**: Create comprehensive documentation
 - **Generate Code**: Create new implementations across services
 
+#### ✅ Claude CAN Do in This Environment:
+- **Git Operations**: Read git status, history, and files (this IS a git repository)
+- **Network Requests**: Can make HTTP requests to external APIs (GitHub, web search)
+- **Web Search**: Can search DuckDuckGo and extract search results
+- **External APIs**: Can call real public APIs (GitHub, weather, etc.)
+- **Request Patterns**: Can create RPS (Request Pattern Specifications)
+- **Live Testing**: Can test code against real external systems
+- **File Operations**: Full filesystem access within allowed repositories
+- **Script Execution**: Run Python, Node.js, bash scripts
+
 #### ❌ Claude CANNOT Do in This Environment:
-- **Git Operations**: This is NOT a git repository
 - **Docker Operations**: Docker is not available
-- **Database Connections**: No access to live databases
-- **Network Requests**: Cannot connect to external APIs (except limited)
-- **Production Deployment**: Cannot deploy to production systems
-- **External Service Access**: Cannot access live services or APIs
+- **Production Database Access**: Cannot connect to production databases
 - **CI/CD Integration**: Cannot interact with GitHub Actions, etc.
-- **Secrets Management**: Cannot access real production secrets
-- **Webhook Handling**: Cannot receive webhook events
+- **Production Deployment**: Cannot deploy to production systems
+- **Internal Company Systems**: Cannot access internal company systems
+- **File Outside Repos**: Cannot create files outside the 24 approved repositories
 
 ### Jules MCP Server Capabilities
 
