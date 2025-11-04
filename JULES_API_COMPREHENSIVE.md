@@ -3,12 +3,14 @@
 Comprehensive Jules API Client for full integration testing
 """
 
+import os
 import urllib.request
 import json
 import time
 import hashlib
 import random
 import uuid
+import urllib.parse
 from typing import Dict, Optional, List, Any
 from dataclasses import dataclass
 from datetime import datetime, timezone
