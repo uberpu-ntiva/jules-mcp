@@ -1,3 +1,99 @@
+# Google Jules API - Complete Integration Guide
+
+## API Overview
+
+The Google Jules API provides programmatic access to Jules AI coding capabilities with comprehensive automation and integration features.
+
+### Service Information
+- **Base URL**: `https://jules.googleapis.com`
+- **API Version**: `v1alpha` (latest)
+- **Authentication**: `X-Goog-Api-Key` header
+- **API Key Format**: Starts with "AQ."
+- **Key Generation**: [Jules Settings → API Keys](https://jules.google.com/settings#api)
+- **Maximum Keys**: 3 active API keys per account
+
+### Core Concepts
+
+#### 1. **Source**
+Input sources for Jules (typically GitHub repositories). Requires Jules GitHub app installation.
+
+#### 2. **Session**
+Continuous unit of work similar to a chat session. Each session has:
+- Unique session ID
+- Prompt/task description
+- Source context
+- Activities timeline
+- State (ACTIVE, COMPLETED, FAILED, CANCELLED)
+
+#### 3. **Activity**
+Individual actions within a session:
+- Plan generation
+- User messages
+- Code generation
+- Progress updates
+- Error messages
+
+## Complete API Endpoints
+
+### Session Management
+
+#### Create Session
+```http
+POST /v1alpha/sessions
+Content-Type: application/json
+X-Goog-Api-Key: YOUR_API_KEY
+
+{
+  "prompt": "Create a boba app!",
+  "sourceContext": {
+    "source": "sources/github/bobalover/boba",
+    "githubRepoContext": {
+      "startingBranch": "main"
+    }
+  },
+  "title": "Boba App",
+  "sessionId": "unique-session-id"
+}
+```
+
+#### Approve Plan Workflow
+```http
+POST /v1alpha/{session}:approvePlan
+Content-Type: application/json
+X-Goog-Api-Key: YOUR_API_KEY
+
+{
+  "approvalData": {
+    "approved": true,
+    "feedback": "Looks good, proceed with implementation"
+  }
+}
+```
+
+#### Activity Monitoring
+```http
+GET /v1alpha/{session}/activities
+X-Goog-Api-Key: YOUR_API_KEY
+```
+
+### Key Integration Patterns
+
+#### Plan Approval Workflow
+1. Create session with task description
+2. Monitor for `PLAN_GENERATED` activity
+3. Present plan to user for approval
+4. Call `approvePlan` endpoint with approval decision
+5. Continue monitoring for completion
+
+#### Completion Notification Workflow
+1. Monitor session state changes
+2. Listen for `COMPLETED` state
+3. Retrieve final activities and generated code
+4. Notify user with completion summary
+5. Clean up session resources
+
+---
+
 #!/usr/bin/env python3
 """
 Comprehensive Jules API Client for full integration testing
