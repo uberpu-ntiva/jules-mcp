@@ -1,7 +1,11 @@
 # Jules AI Agent Guidelines
 
+> **Note**: This is supplementary documentation. **Jules reads `AGENTS.md`** when working on the jules-mcp service.
+> The "Jules AI Guidelines" section in `AGENTS.md` contains the core rules Jules must follow.
+> This document (`JULES.md`) provides extended examples and templates for humans and Claude.
+
 ## Purpose
-This document defines the rules, expectations, and coordination guidelines for Jules AI when working on Pact Platform projects through the Jules MCP server.
+This document provides extended examples, task templates, and detailed guidelines for coordinating Jules AI on Pact Platform projects through the Jules MCP server.
 
 ---
 
