@@ -12,6 +12,7 @@ from dotenv import load_dotenv
 from .jules_client import JulesAPIClient
 from .worker_manager import WorkerManager
 from .utils import format_timestamp, truncate_text
+from .request_patterns import ExternalAPIManager, WebSearchManager
 
 # Load environment variables
 load_dotenv()
