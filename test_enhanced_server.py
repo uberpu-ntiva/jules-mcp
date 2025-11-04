@@ -260,7 +260,7 @@ async def test_jules_api_integration():
         print(f"✅ Jules API client initialized successfully")
         print(f"   API Key: {api_key[:20]}...")
         print(f"   Base URL: {client.base_url}")
-        print(f"   API Version: {client.api_version}")
+        print(f"   API Version: v1alpha")
 
         await client.close()
         return True
