@@ -22,11 +22,33 @@ Enhanced Model Context Protocol (MCP) server for Google Jules AI integration wit
 - **Secure API Key Management**: Encrypted storage with rotation support
 - **Complete Audit Trail**: Logging of all AI operations and costs
 
-## Installation
+## Quick Start
 
+### Prerequisites
+- Python 3.8+
+- Google Jules API key
+
+### Installation
 ```bash
+# Clone repository
+git clone <repository-url>
 cd jules-mcp
-pip install -e .
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Set up environment
+export GOOGLE_JULES_API_KEY="your-api-key-here"
+export SERVICE_PORT=8085
+
+# Start server
+python -m app.main
+```
+
+### MCP Client Connection
+```bash
+# Connect Claude Desktop or other MCP client
+mcp-client connect --server http://localhost:8085 --protocol mcp
 ```
 
 ## Configuration
