@@ -53,17 +53,37 @@ mcp-client connect --server http://localhost:8085 --protocol mcp
 
 ## Configuration
 
-Create a `.env` file:
-
+### Environment Variables
 ```bash
-JULES_API_KEY=your_api_key_here
-JULES_API_BASE_URL=https://jules.googleapis.com
-JULES_API_VERSION=v1alpha
-WORKER_POLL_INTERVAL=5
-WORKER_STUCK_TIMEOUT=300
+# Required
+GOOGLE_JULES_API_KEY=your-api-key-here
+
+# Optional
+SERVICE_PORT=8085                    # Server port
+LOG_LEVEL=INFO                      # Logging level
+JULES_API_BASE_URL=https://jules.googleapis.com  # API endpoint
+MAX_COST_PER_HOUR=10.00             # Cost limit per hour
+DAILY_COST_LIMIT=100.00             # Daily cost limit
+CACHE_TTL=3600                      # Cache time-to-live (seconds)
+RATE_LIMIT_REQUESTS=60              # Requests per minute
+CODE_VALIDATION_ENABLED=true        # Enable code validation
+COST_TRACKING_ENABLED=true          # Enable cost tracking
 ```
 
 Get your API key from: https://jules.google.com/settings#api
+
+### MCP Client Configuration
+Add to your `claude_desktop_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "jules-orchestrator": {
+      "command": "jules-mcp"
+    }
+  }
+}
+```
 
 ## Usage with Claude Desktop
 
