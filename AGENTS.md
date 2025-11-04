@@ -358,19 +358,7 @@ You are the final validator because:
 ### Common Mistakes to Avoid
 
 #### ❌ Claude Mistakes:
-1. **Assuming Git Access**
-   ```bash
-   # ❌ Claude will try this and fail
-   git status
-   git commit -m "message"
-   git push origin main
-
-   # ✅ Claude should do this instead
-   echo "Changes made to files"
-   echo "Note: This is not a git repository"
-   ```
-
-2. **Trying Docker Operations**
+1. **Trying Docker Operations**
    ```bash
    # ❌ Claude will try this and fail
    docker build -t app .
@@ -382,7 +370,7 @@ You are the final validator because:
    node dist/index.js
    ```
 
-3. **Assuming Production Deployment**
+2. **Assuming Production Deployment**
    ```
    # ❌ Claude will assume this works
    "Deploy to production by running deploy.sh"
@@ -392,14 +380,13 @@ You are the final validator because:
    "Human must deploy manually to production"
    ```
 
-4. **Network/API Assumptions**
-   ```python
-   # ❌ Claude will assume this works
-   response = requests.get("https://api.stripe.com")
+3. **Assuming Unlimited File Access**
+   ```
+   # ❌ Claude will try this and fail
+   touch /root/file.txt  # Cannot write outside approved repos
 
    # ✅ Claude should do this instead
-   # Use test fixtures or mock data
-   mock_data = {"status": "success"}
+   touch jules-mcp/file.txt  # Within approved repositories
    ```
 
 #### ❌ Jules MCP Mistakes:
