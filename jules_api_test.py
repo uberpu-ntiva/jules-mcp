@@ -476,8 +476,10 @@ def main():
     print(f"  Session Creation: {plan_approval_result['session_creation']}")
     print(f"  Plan Approval: {plan_approval_result['plan_approval']}")
     print(f"  Plan Rejection: {plan_approval_result['plan_rejection']}")
+    print(f"  Activity Monitoring: {plan_approval_result['activity_monitoring']}")
     print(f"  Unique ID Generation: {'✅' if plan_approval_result['unique_id_generation'] else '❌'}")
     print(f"  Unique Branch Generation: {'✅' if plan_approval_result['unique_branch_generation'] else '❌'}")
+    print(f"  Workflow Methods: {'✅' if plan_approval_result['workflow_methods_exist'] else '❌'}")
 
     print(f"\n🎯 Final Summary:")
     print(f"  Plan Approval Workflow: {'✅' if plan_approval_result['test_result'] == 'PASSED' else '❌'}")
