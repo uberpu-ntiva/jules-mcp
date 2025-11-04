@@ -195,7 +195,7 @@ class JulesWorkflowManager:
         """Generate unique session ID based on task description and timestamp"""
         # Create hash from task description + timestamp + random
         timestamp = datetime.now(timezone.utc).isoformat()
-        random_suffix = str(random.randint(1000, 9999)
+        random_suffix = str(random.randint(1000, 9999))
         hash_input = f"{task_description[:50]}{timestamp}{random_suffix}"
         unique_hash = hashlib.md5(hash_input.encode()).hexdigest()[:12]
 
