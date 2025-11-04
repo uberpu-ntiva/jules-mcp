@@ -568,6 +568,37 @@ npm run test:db  # Requires real database connection
 npm run test:api  # Requires real server deployment
 ```
 
+#### ❌ Repository Restrictions:
+Claude is RESTRICTED to only these repositories and cannot create files outside them:
+- **DOX**
+- **dox-tmpl-pdf-recognizer**
+- **dox-pact-manual-upload**
+- **dox-batch-assembly**
+- **jules-mcp**
+- **dox-admin**
+- **dox-rtns-barcode-matcher**
+- **dox-gtwy-main**
+- **dox-tmpl-field-mapper**
+- **dox-data-etl-service**
+- **dox-core-auth**
+- **dox-auto-workflow-engine**
+- **dox-core-rec-engine**
+- **dox-data-distrib-service**
+- **dox-data-aggregation-service**
+- **dox-auto-lifecycle-service**
+- **dox-actv-service**
+- **dox-actv-listener**
+- **dox-core-store**
+- **dox-esig-webhook-listener**
+- **dox-esig-service**
+- **dox-rtns-manual-upload**
+- **dox-tmpl-pdf-upload**
+- **dox-tmpl-service**
+- **test-jules**
+- **dox-mcp-server**
+
+**Important**: Claude cannot create files in `/workspace/` root or anywhere outside these approved repositories.
+
 ---
 
 ## Jules AI Guidelines (REQUIRED READING)
