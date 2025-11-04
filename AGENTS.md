@@ -146,6 +146,158 @@ await jules_mcp.call_tool("jules_create_worker", {
 
 ---
 
+## Claude's Limitations (CRITICAL REMINDER)
+
+**IMPORTANT**: Claude (the orchestrator) has significant limitations. Both Jules and humans must understand what Claude CANNOT do.
+
+### What Claude CANNOT Do
+
+#### ❌ Cannot Execute Code
+- **Cannot run** the code Jules generates
+- **Cannot test** the actual functionality
+- **Cannot verify** that code actually works
+- **Cannot execute** commands that Jules implements
+- **Cannot validate** runtime behavior
+
+**Example:**
+```
+Claude can: Read code and understand logic
+Claude CANNOT: Run `npm test` or execute the code to verify it works
+```
+
+#### ❌ Cannot Access Live Systems
+- **Cannot connect** to databases
+- **Cannot query** production systems
+- **Cannot access** live APIs
+- **Cannot verify** deployed services
+- **Cannot test** in real environments
+
+**Example:**
+```
+Claude can: Design database schema
+Claude CANNOT: Connect to PostgreSQL and verify the schema exists
+```
+
+#### ❌ Cannot Verify Test Results
+- **Cannot run** test suites
+- **Cannot see** test output
+- **Cannot verify** test coverage
+- **Cannot execute** integration tests
+- **Cannot validate** that tests actually pass
+
+**Example:**
+```
+Claude can: Review test code for completeness
+Claude CANNOT: Run pytest and see if tests pass
+```
+
+#### ❌ Cannot Perform Runtime Validation
+- **Cannot verify** API responses
+- **Cannot test** authentication flows
+- **Cannot validate** error handling in practice
+- **Cannot check** performance metrics
+- **Cannot monitor** system behavior
+
+**Example:**
+```
+Claude can: Design error handling logic
+Claude CANNOT: Make actual API calls to verify errors are handled correctly
+```
+
+#### ❌ Cannot Review Implementation Quality (Thoroughly)
+- **Cannot run** linters
+- **Cannot execute** type checkers
+- **Cannot verify** code compiles
+- **Cannot test** in browsers
+- **Cannot validate** runtime dependencies
+
+**Example:**
+```
+Claude can: Read code and spot obvious issues
+Claude CANNOT: Run `tsc` to verify TypeScript types are correct
+```
+
+### What Claude CAN Do
+
+#### ✅ Architecture & Design
+- Design system architecture
+- Create planning documents
+- Specify requirements
+- Define APIs and interfaces
+
+#### ✅ Code Review (Limited)
+- Read and understand code
+- Spot logical errors
+- Identify security concerns
+- Suggest improvements
+- **BUT**: Cannot verify code actually works
+
+#### ✅ Orchestration
+- Create Jules workers via MCP
+- Monitor Jules' progress
+- Provide clarifications
+- Coordinate across services
+- Manage workflow
+
+#### ✅ Documentation
+- Write architecture docs
+- Create planning documents
+- Document decisions
+- Explain concepts
+
+### Why This Matters
+
+#### For Jules:
+You **MUST** perform thorough self-review because Claude cannot:
+- ❌ Run your tests
+- ❌ Execute your code
+- ❌ Verify it works
+- ❌ Catch runtime errors
+
+**Your self-review is the ONLY validation before human review.**
+
+#### For Humans:
+You are the final validator because:
+- ❌ Claude cannot test
+- ❌ Jules is self-reviewing
+- ✅ You MUST verify code works
+- ✅ You MUST run tests
+- ✅ You MUST validate functionality
+
+### Workflow Implications
+
+```
+1. Claude: Designs architecture
+   ✅ Can do this well
+
+2. Jules: Implements code + self-reviews
+   ⚠️ Must be thorough - Claude cannot verify
+
+3. Claude: Reads code, spots obvious issues
+   ⚠️ Limited - cannot run/test
+
+4. Human: Final validation
+   ✅ CRITICAL - runs tests, validates, approves
+```
+
+### Critical Reminders
+
+**To Jules:**
+> Since Claude cannot test your code, your self-review checklist
+> is critical. Complete ALL items before marking work done.
+
+**To Claude (self-reminder):**
+> I cannot verify that code works. I can only orchestrate,
+> design, and provide limited code review. Trust Jules'
+> self-review and defer to human for final validation.
+
+**To Humans:**
+> Neither Claude nor Jules can fully validate the code works
+> in practice. You must run tests, verify functionality,
+> and approve/reject based on actual execution.
+
+---
+
 ## Jules AI Guidelines (REQUIRED READING)
 
 **If you are Jules AI implementing code for this project, READ THE CENTRALIZED STANDARDS FIRST.**
