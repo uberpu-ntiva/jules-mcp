@@ -38,6 +38,7 @@ mcp = FastMCP("Jules MCP Server")
 # Global state (will be initialized in main)
 jules_client: Optional[JulesAPIClient] = None
 worker_manager: Optional[WorkerManager] = None
+request_manager = request_patterns.request_manager
 
 
 async def initialize_server():
