@@ -250,8 +250,53 @@ class JulesAPIClient:
 
     def approve_plan(self, session_name: str, approval_data: Optional[Dict] = None) -> Dict[str, Any]:
         """Approve a plan in a session"""
+        if approval_data is None:
+            approval_data = {
+                "approvalData": {
+                    "approved": True,
+                    "feedback": "Plan approved, proceed with implementation"
+                }
+            }
         endpoint = f'/v1alpha/{session_name}:approvePlan'
         return self.retry_request('POST', endpoint, approval_data)
+
+    def reject_plan(self, session_name: str, feedback: str = "Plan rejected, please revise") -> Dict[str, Any]:
+        """Reject a plan in a session"""
+        approval_data = {
+            "approvalData": {
+                "approved": False,
+                "feedback": feedback
+            }
+        }
+        endpoint = f'/v1alpha/{session_name}:approvePlan'
+        return self.retry_request('POST', endpoint, approval_data)
+
+    def wait_for_activity(self, session_name: str, activity_type: str,
+                         timeout_minutes: int = 10) -> Dict[str, Any]:
+        """Wait for specific activity type to appear"""
+        start_time = time.time()
+        timeout_seconds = timeout_minutes * 60
+
+        while time.time() - start_time < timeout_seconds:
+            activities_result = self.get_activities(session_name)
+
+            if activities_result['status'] == 'success':
+                activities = activities_result.get('data', [])
+
+                for activity in activities:
+                    if activity.get('type') == activity_type:
+                        return {
+                            'status': 'success',
+                            'activity': activity,
+                            'found_at': time.time() - start_time
+                        }
+
+            time.sleep(3)  # Check every 3 seconds
+
+        return {
+            'status': 'timeout',
+            'message': f'Activity type {activity_type} not found within {timeout_minutes} minutes'
+        }
 
     def update_session(self, session_name: str, update_data: Dict) -> Dict[str, Any]:
         """Update a session"""
