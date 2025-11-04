@@ -411,11 +411,13 @@ class JulesWorkflowManager:
             print(f"❌ Failed to create session: {result.get('error_message', 'Unknown error')}")
             return result
 
-    def monitor_session_until_complete(self, session_id: str, timeout_minutes: int = 30) -> Dict[str, Any]:
-        """Monitor a session until completion"""
+    def monitor_session_until_complete(self, session_id: str, timeout_minutes: int = 30,
+                                     auto_approve_plans: bool = False) -> Dict[str, Any]:
+        """Monitor a session until completion with plan approval workflow"""
         start_time = time.time()
         timeout_seconds = timeout_minutes * 60
         completion_status = None
+        plan_approved = False
 
         print(f"🔄 Monitoring session {session_id} (timeout: {timeout_minutes} minutes)")
 
@@ -452,15 +454,43 @@ class JulesWorkflowManager:
                 latest_activity = activities[-1] if activities else None
 
                 if latest_activity:
-                    print(f"📊 Latest activity: {latest_activity.get('type', 'UNKNOWN')}")
+                    activity_type = latest_activity.get('type', 'UNKNOWN')
+                    print(f"📊 Latest activity: {activity_type}")
 
-                    # Check if plan needs approval
-                    if latest_activity.get('type') == 'PLAN_GENERATED':
-                        print(f"📋 Plan generated. Use approvePlan() to approve.")
-                    elif latest_activity.get('type') == 'ERROR':
-                        print(f"⚠️ Error: {latest_activity.get('message', 'Unknown error')}")
-                    elif latest_activity.get('type') == 'CODE_GENERATED':
-                        print(f"💻 Code generated successfully!")
+                    # Handle plan generation workflow
+                    if activity_type == 'PLAN_GENERATED' and not plan_approved:
+                        print(f"📋 Plan generated!")
+                        plan_content = latest_activity.get('message', 'No plan details available')
+                        print(f"📄 Plan: {plan_content[:200]}...")
+
+                        if auto_approve_plans:
+                            print("🤖 Auto-approving plan...")
+                            approval_result = self.client.approve_plan(session_id)
+                            if approval_result['status'] == 'success':
+                                plan_approved = True
+                                print("✅ Plan auto-approved")
+                            else:
+                                print(f"❌ Plan approval failed: {approval_result.get('error_message')}")
+                        else:
+                            print("⏳ Waiting for plan approval... (call approve_plan() manually)")
+
+                    elif activity_type == 'PLAN_APPROVED':
+                        plan_approved = True
+                        print("✅ Plan approved by user")
+
+                    elif activity_type == 'PLAN_REJECTED':
+                        print("❌ Plan rejected by user")
+                        # Session may continue with revised plan
+
+                    elif activity_type == 'ERROR':
+                        error_msg = latest_activity.get('message', 'Unknown error')
+                        print(f"⚠️ Error: {error_msg}")
+
+                    elif activity_type == 'CODE_GENERATED':
+                        print("💻 Code generated successfully!")
+
+                    elif activity_type == 'COMPLETION_NOTIFICATION':
+                        print("🔔 Completion notification received")
 
             # Wait before next check
             time.sleep(5)
@@ -469,16 +499,107 @@ class JulesWorkflowManager:
             completion_status = 'TIMEOUT'
             print(f"⏰️ Session monitoring timed out")
 
+        # Get final activities for completion summary
+        final_activities_result = self.client.get_activities(session_id)
+        completion_summary = None
+        if final_activities_result['status'] == 'success':
+            activities = final_activities_result.get('data', [])
+            completion_activities = [a for a in activities if a.get('type') in ['COMPLETION_NOTIFICATION', 'CODE_GENERATED']]
+            if completion_activities:
+                completion_summary = completion_activities[-1].get('message', 'No completion summary available')
+
         # Clean up session from active tracking
         if session_id in self.active_sessions:
             session_info = self.active_sessions[session_id]
             print(f"📝 Session {session_id} monitoring completed: {completion_status}")
+            if completion_summary:
+                print(f"📋 Summary: {completion_summary}")
             del self.active_sessions[session_id]
 
         return {
             'session_id': session_id,
             'completion_status': completion_status,
-            'duration_seconds': time.time() - start_time
+            'duration_seconds': time.time() - start_time,
+            'plan_approved': plan_approved,
+            'completion_summary': completion_summary
+        }
+
+    def execute_with_plan_approval(self, task_description: str, source: str,
+                                 github_branch: str = "main",
+                                 auto_approve: bool = False,
+                                 timeout_minutes: int = 30) -> Dict[str, Any]:
+        """Execute complete workflow with plan approval process"""
+        print("🚀 Starting Jules workflow with plan approval")
+        print("=" * 50)
+
+        # Step 1: Create session
+        print("\n📝 Step 1: Creating session...")
+        session_result = self.create_workflow_session(
+            task_description=task_description,
+            source=source,
+            github_branch=github_branch,
+            title=f"Automated Task: {task_description[:50]}..."
+        )
+
+        if session_result.get('status') != 'success':
+            return {
+                'workflow_status': 'FAILED',
+                'reason': f"Session creation failed: {session_result.get('error_message', 'Unknown error')}",
+                'stage': 'session_creation'
+            }
+
+        session_id = session_result['session_id']
+
+        # Step 2: Wait for plan generation
+        print(f"\n📋 Step 2: Waiting for plan generation...")
+        plan_result = self.client.wait_for_activity(
+            session_id, 'PLAN_GENERATED', timeout_minutes=10
+        )
+
+        if plan_result['status'] == 'timeout':
+            return {
+                'workflow_status': 'FAILED',
+                'reason': 'Plan generation timed out',
+                'stage': 'plan_generation'
+            }
+
+        print("✅ Plan generated successfully!")
+
+        # Step 3: Handle plan approval
+        if auto_approve:
+            print(f"\n🤖 Step 3: Auto-approving plan...")
+            approval_result = self.client.approve_plan(session_id)
+            if approval_result['status'] != 'success':
+                return {
+                    'workflow_status': 'FAILED',
+                    'reason': f"Plan approval failed: {approval_result.get('error_message')}",
+                    'stage': 'plan_approval'
+                }
+            print("✅ Plan approved!")
+        else:
+            print(f"\n⏳ Step 3: Plan requires manual approval")
+            print(f"   Session ID: {session_id}")
+            print(f"   Call approve_plan('{session_id}') to approve")
+
+        # Step 4: Monitor until completion
+        print(f"\n🔄 Step 4: Monitoring execution...")
+        completion_result = self.monitor_session_until_complete(
+            session_id, timeout_minutes=timeout_minutes, auto_approve_plans=auto_approve
+        )
+
+        return {
+            'workflow_status': completion_result['completion_status'],
+            'session_id': session_id,
+            'branch_name': session_result['branch_name'],
+            'plan_approved': completion_result.get('plan_approved', False),
+            'completion_summary': completion_result.get('completion_summary'),
+            'duration': completion_result['duration_seconds'],
+            'stages_completed': [
+                'session_creation',
+                'plan_generation',
+                'plan_approval' if auto_approve else 'manual_approval_pending',
+                'execution_monitoring'
+            ]
         }
 
     def test_full_workflow(self) -> Dict[str, Any]:
