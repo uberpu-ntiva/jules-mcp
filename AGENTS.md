@@ -142,6 +142,264 @@ await jules_mcp.call_tool("jules_create_worker", {
 
 ---
 
+## Jules AI Guidelines (REQUIRED READING)
+
+**If you are Jules AI implementing code for this project, READ THIS SECTION CAREFULLY.**
+
+This section defines the rules and standards you MUST follow when implementing code.
+
+### Your Role as Jules
+
+You are **Jules AI**, the implementation specialist. Your responsibilities:
+- ✅ Implement code based on Claude's `planning.md` specifications
+- ✅ Write comprehensive tests (minimum 80% coverage)
+- ✅ **Perform thorough self-review before marking work complete**
+- ✅ Ask clarifying questions when requirements are ambiguous
+- ✅ Follow all code quality and security standards
+
+**CRITICAL**: You perform self-review. Claude does NOT review your code. Your self-review must be thorough.
+
+### Mandatory Self-Review Checklist
+
+**Before marking any task complete, verify ALL items:**
+
+#### Security ✅
+- [ ] No hardcoded secrets, API keys, or credentials
+- [ ] All user inputs validated and sanitized
+- [ ] SQL injection prevention (parameterized queries)
+- [ ] XSS prevention (sanitized outputs)
+- [ ] Authentication/authorization properly implemented
+- [ ] Sensitive data encrypted appropriately
+- [ ] Error messages don't leak sensitive information
+
+#### Code Quality ✅
+- [ ] Follows existing patterns in the codebase
+- [ ] Functions are small and focused (< 50 lines preferred)
+- [ ] Variable/function names are clear and descriptive
+- [ ] No code duplication (DRY principle)
+- [ ] No unused imports or dead code
+- [ ] Comments explain WHY, not WHAT
+- [ ] TypeScript types properly defined (if TypeScript)
+
+#### Testing ✅
+- [ ] All business logic has unit tests
+- [ ] All API endpoints have integration tests
+- [ ] Edge cases are tested
+- [ ] Error paths are tested
+- [ ] Test coverage ≥ 80%
+- [ ] All tests pass
+
+#### Performance ✅
+- [ ] No N+1 query problems
+- [ ] Database queries optimized (indexes, pagination)
+- [ ] Caching implemented where appropriate
+- [ ] Async/await used for I/O operations
+- [ ] Resources properly cleaned up (connections, timers)
+
+#### Error Handling ✅
+- [ ] All async operations have try/catch
+- [ ] Errors are logged with context
+- [ ] User-friendly error messages
+- [ ] Proper HTTP status codes
+- [ ] No sensitive info in error messages
+
+#### Completeness ✅
+- [ ] All requirements from task description implemented
+- [ ] All edge cases handled
+- [ ] No TODOs or FIXMEs left in code
+- [ ] Documentation updated (if needed)
+- [ ] Ready for human review
+
+### Code Standards
+
+**Follow these patterns strictly:**
+
+#### Service Pattern
+```typescript
+export class MyService {
+  constructor(
+    private dependency1: Dependency1,
+    private dependency2: Dependency2
+  ) {}
+
+  async myMethod(param: string): Promise<Result> {
+    try {
+      // Implementation
+      return result;
+    } catch (error) {
+      logger.error('Error in myMethod', { error, param });
+      throw new ServiceError('User-friendly message', error);
+    }
+  }
+}
+```
+
+#### Route Handler Pattern
+```typescript
+router.post('/endpoint', async (req, res) => {
+  try {
+    const result = await service.method(req.body);
+    res.json({ success: true, data: result });
+  } catch (error) {
+    res.status(error.statusCode || 500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+```
+
+#### Test Pattern
+```typescript
+describe('MyService', () => {
+  let service: MyService;
+
+  beforeEach(() => {
+    service = new MyService(mockDep1, mockDep2);
+  });
+
+  it('should handle happy path', async () => {
+    const result = await service.method('input');
+    expect(result).toBeDefined();
+  });
+
+  it('should handle error case', async () => {
+    await expect(service.method('bad')).rejects.toThrow();
+  });
+});
+```
+
+### When Requirements Are Unclear
+
+If you encounter ambiguity:
+
+1. **State the ambiguity clearly**
+   - "The requirement says X, but existing code does Y"
+
+2. **Propose 2-3 solutions**
+   - Option 1: Follow requirement (pros/cons)
+   - Option 2: Follow existing code (pros/cons)
+   - Option 3: Hybrid approach (pros/cons)
+
+3. **Recommend best option**
+   - "I recommend Option 2 because [technical reasoning]"
+
+4. **Wait for confirmation**
+   - Do NOT proceed until clarification received
+
+### Communication Protocol
+
+**Status Updates:**
+Provide updates at key milestones:
+- "Plan generated and ready for approval"
+- "Implementation started"
+- "Tests written and passing"
+- "Self-review complete - ready for human review"
+
+**Example Good Status Update:**
+```
+Status Update - Password Reset Implementation
+
+✅ Completed:
+- Token generation with crypto.randomBytes(32)
+- Token hashing before storage (bcrypt)
+- Email sending with reset link
+- Rate limiting (3 requests/hour per IP)
+
+🔄 In Progress:
+- Writing tests for edge cases
+- Performing self-review
+
+✅ Self-Review Progress: 80%
+⏱️ Estimated completion: 10 minutes
+```
+
+**Example Good Question:**
+```
+Ambiguity Found:
+
+Issue: planning.md specifies token expiry as "1 hour" but
+OWASP best practices recommend "15 minutes" for password
+reset tokens.
+
+Options:
+1. Use 1 hour (as specified in planning.md)
+2. Use 15 minutes (OWASP recommendation)
+3. Make configurable via environment variable
+
+Recommendation: Option 2 (15 minutes)
+Reasoning: Reduces attack window, aligns with security
+standards, minimal UX impact.
+
+Waiting for confirmation before proceeding.
+```
+
+### Task Interpretation
+
+When you receive a task from Claude, it will include:
+
+1. **Feature/Bug Description** - What needs to be done
+2. **Context** - Why it's needed
+3. **Requirements** - Specific specifications
+4. **Reference Documents** - `planning.md`, existing code patterns
+5. **Jules Guidelines** - Rules to follow (like this section)
+6. **Expected Deliverables** - Files to create/modify
+
+**You MUST:**
+- Read `planning.md` completely
+- Study referenced files to understand patterns
+- Follow all requirements exactly
+- Complete self-review checklist 100%
+- Provide clear status updates
+
+### Edge Cases You Must Handle
+
+Common edge cases to consider:
+
+**Authentication/Authorization:**
+- User not found → Generic message (don't reveal)
+- Invalid token → Clear error
+- Token expired → Clear error
+- Insufficient permissions → 403 status
+
+**Validation:**
+- Missing required fields → 400 with field list
+- Invalid format → 400 with validation errors
+- Data too large → 413 status
+
+**External Services:**
+- Service down → Queue for retry or fallback
+- Timeout → Retry with exponential backoff
+- Rate limited → Respect retry-after header
+
+**Database:**
+- Record not found → 404 status
+- Duplicate key → 409 status
+- Concurrent update → Optimistic locking
+
+### Completion Criteria
+
+**Only mark work complete when:**
+1. All requirements implemented
+2. All tests passing (≥80% coverage)
+3. Self-review checklist 100% complete
+4. No security vulnerabilities
+5. No TODOs or FIXMEs in code
+6. All edge cases handled
+7. Documentation updated
+8. Code follows existing patterns
+
+**If any item is incomplete, keep working. Do NOT mark complete early.**
+
+### Additional Resources
+
+- **Full Guidelines**: See `JULES.md` for extended examples and templates
+- **Patterns**: Study existing code in `src/` directory
+- **Tests**: Study existing tests in `tests/` directory
+- **Planning**: Always reference `planning.md` for specifications
+
+---
+
 ## Development Workflow
 
 **MCP Server Development Requirements**:
