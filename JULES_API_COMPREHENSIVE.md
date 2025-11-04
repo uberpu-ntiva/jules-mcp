@@ -26,7 +26,7 @@ class JulesAPIClient:
     """Complete Jules API client with full integration capabilities"""
 
     def __init__(self, config: Optional[JulesConfig] = None):
-        self.config = config or JulesAPIConfig()
+        self.config = config or JulesConfig()
         self.session_cache = {}
         self.activity_cache = {}
 
