@@ -705,5 +705,5 @@ def main():
     print("Test execution complete!")
     return test_results
 
-if __name__main__":
+if __name__ == "__main__":
     main()
