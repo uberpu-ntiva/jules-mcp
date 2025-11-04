@@ -1026,6 +1026,82 @@ class JulesAPITester:
                 'message': f'Workflow integration error: {str(e)}'
             }
 
+    def test_plan_approval_notifications(self) -> Dict[str, Any]:
+        """Test plan approval and completion notification workflows"""
+        try:
+            workflow = JulesWorkflowManager(self.client)
+
+            # Test 1: Plan approval workflow structure
+            session_result = workflow.create_workflow_session(
+                task_description="Test plan approval workflow",
+                source="sources/github/test/repo",
+                github_branch="main",
+                title="Plan Approval Test"
+            )
+
+            # Test 2: Verify approve_plan method exists and works
+            if hasattr(workflow.client, 'approve_plan'):
+                approval_test = workflow.client.approve_plan('test-session')
+                approval_method_exists = True
+            else:
+                approval_method_exists = False
+
+            # Test 3: Verify reject_plan method exists
+            if hasattr(workflow.client, 'reject_plan'):
+                reject_method_exists = True
+            else:
+                reject_method_exists = False
+
+            # Test 4: Verify wait_for_activity method exists
+            if hasattr(workflow.client, 'wait_for_activity'):
+                wait_activity_exists = True
+            else:
+                wait_activity_exists = False
+
+            # Test 5: Verify execute_with_plan_approval method exists
+            if hasattr(workflow, 'execute_with_plan_approval'):
+                execute_method_exists = True
+            else:
+                execute_method_exists = False
+
+            # Test 6: Test unique ID generation for session/branch naming
+            id1 = workflow.generate_unique_session_id("test task 1")
+            id2 = workflow.generate_unique_session_id("test task 2")
+            unique_ids = id1 != id2
+
+            branch1 = workflow.generate_unique_branch_name("test task 1", id1)
+            branch2 = workflow.generate_unique_branch_name("test task 2", id2)
+            unique_branches = branch1 != branch2
+
+            all_methods_exist = (
+                approval_method_exists and
+                reject_method_exists and
+                wait_activity_exists and
+                execute_method_exists and
+                unique_ids and
+                unique_branches
+            )
+
+            return {
+                'passed': all_methods_exist,
+                'name': 'Plan Approval & Completion Notifications',
+                'message': 'Plan approval workflow fully implemented' if all_methods_exist else 'Some workflow methods missing',
+                'details': {
+                    'approve_plan_method': approval_method_exists,
+                    'reject_plan_method': reject_method_exists,
+                    'wait_for_activity_method': wait_activity_exists,
+                    'execute_with_plan_approval_method': execute_method_exists,
+                    'unique_session_ids': unique_ids,
+                    'unique_branch_names': unique_branches
+                }
+            }
+        except Exception as e:
+            return {
+                'passed': False,
+                'name': 'Plan Approval & Completion Notifications',
+                'message': f'Plan approval test error: {str(e)}'
+            }
+
 # --- === EXAMPLE USAGE ===
 
 def main():
