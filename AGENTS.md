@@ -61,7 +61,7 @@ Failure to comply with the protocol may result in excessive costs, security vuln
 
 ## Claude + Jules Coordination
 
-**IMPORTANT**: See `/workspace/cmhjwelrp01t8r7im3ysx2nl8/jules-mcp/JULES.md` for complete Jules AI guidelines and coordination rules.
+**IMPORTANT**: Jules AI guidelines are integrated in the "Jules AI Guidelines" section below. Claude references this section when creating Jules tasks.
 
 ### Role Division
 
