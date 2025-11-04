@@ -245,6 +245,187 @@ async def jules_get_activities(session_id: str, limit: int = 10) -> dict:
         }
 
 
+@mcp.tool()
+async def jules_research_repository(repo_url: str) -> dict:
+    """
+    Research a GitHub repository for implementation patterns and best practices
+
+    Args:
+        repo_url: GitHub repository URL (format: https://github.com/owner/repo)
+
+    Returns:
+        Dictionary with repository analysis and implementation patterns
+    """
+    try:
+        result = await request_manager.research_github_repository(repo_url)
+
+        if result.success:
+            return {
+                "status": "success",
+                "repository": result.data.get("repository"),
+                "recent_commits": result.data.get("recent_commits", [])[:3],
+                "implementation_patterns": result.data.get("implementation_patterns", []),
+                "message": f"Successfully researched repository: {repo_url}"
+            }
+        else:
+            return {
+                "status": "error",
+                "message": result.error or "Research failed"
+            }
+
+    except Exception as e:
+        logger.error(f"Failed to research repository: {e}")
+        return {
+            "status": "error",
+            "message": f"Repository research failed: {str(e)}"
+        }
+
+
+@mcp.tool()
+async def jules_search_best_practices(topic: str) -> dict:
+    """
+    Search for code examples and best practices for a given topic
+
+    Args:
+        topic: Topic to search for (e.g., "React hooks", "API authentication", "Docker optimization")
+
+    Returns:
+        Dictionary with code examples and best practices
+    """
+    try:
+        result = await request_manager.search_best_practices(topic)
+
+        if result.success:
+            data = result.data
+            return {
+                "status": "success",
+                "query": data.get("query"),
+                "total_results": data.get("total_results", 0),
+                "code_examples": data.get("code_examples", [])[:5],
+                "recommended": data.get("recommended", []),
+                "message": f"Found {data.get('total_results', 0)} results for '{topic}'"
+            }
+        else:
+            return {
+                "status": "error",
+                "message": result.error or "Search failed"
+            }
+
+    except Exception as e:
+        logger.error(f"Failed to search best practices: {e}")
+        return {
+            "status": "error",
+            "message": f"Search failed: {str(e)}"
+        }
+
+
+@mcp.tool()
+async def jules_validate_dependencies(dependencies: list) -> dict:
+    """
+    Validate external dependencies and services
+
+    Args:
+        dependencies: List of dependencies to validate
+        Each dependency should be a dict with:
+        - type: "github_repo" or "web_service"
+        - owner: (for github_repo) Repository owner
+        - repo: (for github_repo) Repository name
+        - url: (for web_service) Service URL
+
+    Returns:
+        Dictionary with validation results
+    """
+    try:
+        result = await request_manager.validate_external_dependencies(dependencies)
+
+        if result.success:
+            data = result.data
+            return {
+                "status": "success",
+                "total_dependencies": data.get("total_dependencies", 0),
+                "available": data.get("available", 0),
+                "failed": data.get("failed", 0),
+                "details": data.get("details", []),
+                "message": f"Validated {data.get('total_dependencies', 0)} dependencies"
+            }
+        else:
+            return {
+                "status": "error",
+                "message": result.error or "Validation failed"
+            }
+
+    except Exception as e:
+        logger.error(f"Failed to validate dependencies: {e}")
+        return {
+            "status": "error",
+            "message": f"Dependency validation failed: {str(e)}"
+        }
+
+
+@mcp.tool()
+async def jules_generate_with_context(
+    prompt: str,
+    context_type: str = "general",
+    repo_url: str = None
+) -> dict:
+    """
+    Generate code with enhanced context using web search and repository research
+
+    Args:
+        prompt: Code generation prompt
+        context_type: Type of context to gather ("general", "repository", "best_practices")
+        repo_url: Optional repository URL for context (if context_type="repository")
+
+    Returns:
+        Dictionary with enhanced context and code suggestions
+    """
+    try:
+        context_data = {}
+
+        # Gather context based on type
+        if context_type == "repository" and repo_url:
+            research_result = await request_manager.research_github_repository(repo_url)
+            if research_result.success:
+                context_data["repository"] = {
+                    "patterns": research_result.data.get("implementation_patterns", []),
+                    "language": research_result.data.get("repository", {}).get("language"),
+                    "description": research_result.data.get("repository", {}).get("description")
+                }
+
+        if context_type in ["general", "best_practices"]:
+            # Extract key topics from prompt and search for best practices
+            topics = []
+            prompt_lower = prompt.lower()
+            if "react" in prompt_lower:
+                topics.append("React components best practices")
+            if "api" in prompt_lower:
+                topics.append("REST API design patterns")
+            if "auth" in prompt_lower or "authentication" in prompt_lower:
+                topics.append("API authentication best practices")
+            if "test" in prompt_lower:
+                topics.append("unit testing patterns")
+
+            if topics:
+                search_result = await request_manager.search_best_practices(topics[0])
+                if search_result.success:
+                    context_data["best_practices"] = search_result.data.get("recommended", [])
+
+        return {
+            "status": "success",
+            "prompt": prompt,
+            "context_type": context_type,
+            "context": context_data,
+            "message": f"Enhanced prompt with {context_type} context"
+        }
+
+    except Exception as e:
+        logger.error(f"Failed to generate with context: {e}")
+        return {
+            "status": "error",
+            "message": f"Context generation failed: {str(e)}"
+        }
+
+
 # MCP Resources
 
 @mcp.resource("worker://{session_id}/status")
