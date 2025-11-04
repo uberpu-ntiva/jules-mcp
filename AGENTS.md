@@ -298,6 +298,278 @@ You are the final validator because:
 
 ---
 
+## Environment Limitations & Boundaries (CRITICAL)
+
+**IMPORTANT**: Understanding what Claude and Jules can and cannot do in this specific environment is critical to avoid common mistakes and failed expectations.
+
+### Claude's Environment Capabilities
+
+#### ✅ Claude CAN Do in This Environment:
+- **Read/Write Files**: Full filesystem access to `/workspace/` and all services
+- **Edit Code**: Modify any source files across all services
+- **Create Files**: New files, documentation, configuration
+- **Delete Files**: Remove files (with caution)
+- **Execute Commands**: Run bash commands via Bash tool (with limitations)
+- **Install Packages**: npm, pip, and other package managers
+- **Run Tests**: Execute test suites via bash commands
+- **Read Git History**: Examine code changes and patterns
+- **Use MCP Tools**: Run Jules MCP server locally and call tools
+- **Write Documentation**: Create comprehensive documentation
+- **Generate Code**: Create new implementations across services
+
+#### ❌ Claude CANNOT Do in This Environment:
+- **Git Operations**: This is NOT a git repository
+- **Docker Operations**: Docker is not available
+- **Database Connections**: No access to live databases
+- **Network Requests**: Cannot connect to external APIs (except limited)
+- **Production Deployment**: Cannot deploy to production systems
+- **External Service Access**: Cannot access live services or APIs
+- **CI/CD Integration**: Cannot interact with GitHub Actions, etc.
+- **Secrets Management**: Cannot access real production secrets
+- **Webhook Handling**: Cannot receive webhook events
+
+### Jules MCP Server Capabilities
+
+#### ✅ Jules MCP Server CAN Do:
+- **Local Execution**: Run locally with proper Python environment
+- **Tool Registration**: All 5 tools, 3 resources, 2 prompts available
+- **MCP Protocol**: Full MCP compliance for tool discovery and execution
+- **Cost Tracking**: Monitor and track API usage
+- **Error Handling**: Comprehensive error handling and recovery
+- **Async Operations**: Full async/await support
+- **Worker Management**: Create and manage Jules workers
+- **Activity Monitoring**: Track worker progress and status
+
+#### ❌ Jules MCP Server CANNOT Do:
+- **Real API Calls**: Without valid JULES_API_KEY
+- **Production Access**: No access to production systems
+- **Database Operations**: Cannot connect to production databases
+- **External Integrations**: Limited access to external services
+- **Network Operations**: Limited network access in this environment
+- **Real-time Processing**: No real production workload
+
+### Common Mistakes to Avoid
+
+#### ❌ Claude Mistakes:
+1. **Assuming Git Access**
+   ```bash
+   # ❌ Claude will try this and fail
+   git status
+   git commit -m "message"
+   git push origin main
+
+   # ✅ Claude should do this instead
+   echo "Changes made to files"
+   echo "Note: This is not a git repository"
+   ```
+
+2. **Trying Docker Operations**
+   ```bash
+   # ❌ Claude will try this and fail
+   docker build -t app .
+   docker run app
+
+   # ✅ Claude should do this instead
+   npm install
+   npm run build
+   node dist/index.js
+   ```
+
+3. **Assuming Production Deployment**
+   ```
+   # ❌ Claude will assume this works
+   "Deploy to production by running deploy.sh"
+
+   # ✅ Claude should do this instead
+   "Code changes ready for deployment"
+   "Human must deploy manually to production"
+   ```
+
+4. **Network/API Assumptions**
+   ```python
+   # ❌ Claude will assume this works
+   response = requests.get("https://api.stripe.com")
+
+   # ✅ Claude should do this instead
+   # Use test fixtures or mock data
+   mock_data = {"status": "success"}
+   ```
+
+#### ❌ Jules MCP Mistakes:
+1. **Assuming Real Jules API**
+   ```
+   # ❌ Jules will try this and fail without real key
+   "Call Google Jules API for code generation"
+
+   # ✅ Jules should do this instead
+   "Code generation requires valid JULES_API_KEY"
+   "Local testing with mock responses only"
+   ```
+
+2. **Production Database Access**
+   ```python
+   # ❌ Jules will try this and fail
+   connection = psycopg2.connect("postgresql://prod-db...")
+
+   # ✅ Jules should do this instead
+   # Use database configuration patterns
+   # Actual connection requires production access
+   ```
+
+### Safe Working Patterns
+
+#### ✅ Safe Claude Workflow:
+```bash
+# 1. Read and understand existing code
+find . -name "*.py" -o -name "*.ts" | head -10
+
+# 2. Make changes locally
+npm install
+npm run dev
+
+# 3. Test locally (if possible)
+npm test
+
+# 4. Create comprehensive documentation
+echo "Implementation complete. Human review required for deployment."
+
+# 5. Note deployment requirements
+echo "Deployment requires:"
+echo "- Valid JULES_API_KEY in environment"
+echo "- Production database access"
+echo "- CI/CD pipeline execution"
+```
+
+#### ✅ Safe Jules MCP Workflow:
+```python
+# 1. Local development only
+if os.getenv("JULES_API_KEY"):
+    jules_client = JulesAPIClient()
+else:
+    print("Development mode - no real API calls")
+    return mock_response
+
+# 2. Error handling for missing resources
+try:
+    result = await database.query(query)
+except DatabaseConnectionError:
+    print("Database not available in this environment")
+    return mock_data
+
+# 3. Clear communication about limitations
+print("✅ Code implemented correctly")
+print("⚠️  Production access required for testing")
+print("👤 Human review needed before deployment")
+```
+
+### Environment Verification Commands
+
+When working in this environment, Claude should run these verification commands:
+
+```bash
+# Check what's available
+echo "=== Environment Check ==="
+echo "Node.js: $(node --version)"
+echo "npm: $(npm --version)"
+echo "Python: $(python3 --version)"
+echo "pip: $(pip --version 2>/dev/null || echo 'not available')"
+echo "Docker: $(docker --version 2>/dev/null || echo 'not available')"
+echo "Git: $(git --version 2>/dev/null || echo 'not available')"
+echo "cURL: $(curl --version | head -1)"
+
+# Check file structure
+echo ""
+echo "=== File Structure ==="
+pwd
+ls -la | head -20
+
+# Check current working directory contents
+echo ""
+echo "=== Current Services ==="
+ls -1 | grep "^dox-" | sort
+```
+
+### Deployment Reality Check
+
+Before suggesting deployment, Claude should run:
+
+```bash
+# Check deployment prerequisites
+echo "=== Deployment Prerequisites ==="
+echo "Git repository: $(git rev-parse --is-inside-work-tree 2>/dev/null || echo 'NO - This is not a git repository')"
+echo "Docker: $(docker --version >/dev/null 2>&1 && echo 'YES' || echo 'NO')"
+echo "Production config: $([ -f .env.production ] && echo 'YES' || echo 'NO')"
+echo "CI/CD pipeline: $([ -f .github/workflows/ ] && echo 'YES' || echo 'NO')"
+
+echo ""
+echo "=== Deployment Reality ==="
+echo "Manual deployment required - No automated deployment available"
+echo "Production deployment requires human intervention"
+```
+
+### File System Rights and Permissions
+
+#### ✅ Safe File Operations:
+```bash
+# Claude can do these safely
+mkdir new-feature
+touch new-feature/code.ts
+echo "implementation" > new-feature/code.ts
+cp existing-pattern.ts new-feature/
+rm old-file.ts  # After confirmation
+
+# These are always safe
+read_file.py
+list_files.sh
+create_documentation.md
+```
+
+#### ❌ Risky File Operations:
+```bash
+# Claude should avoid or be very careful
+rm -rf /  # NEVER do this
+chmod -R 777 .  # Dangerous
+sudo commands  # Not available anyway
+systemd services  # Not available in this environment
+```
+
+### Testing Realities
+
+#### ✅ Testing Claude Can Do:
+```bash
+# Unit tests
+npm test
+pytest tests/
+
+# Build verification
+npm run build
+tsc --noEmit
+
+# Linting
+npm run lint
+eslint src/
+
+# Type checking
+npm run type-check
+```
+
+#### ❌ Testing Claude Cannot Do:
+```bash
+# Integration tests requiring external services
+npm run test:integration  # If it calls real APIs
+
+# End-to-end tests
+npm run test:e2e  # Requires real browser/services
+
+# Database tests
+npm run test:db  # Requires real database connection
+
+# Network tests
+npm run test:api  # Requires real server deployment
+```
+
+---
+
 ## Jules AI Guidelines (REQUIRED READING)
 
 **If you are Jules AI implementing code for this project, READ THE CENTRALIZED STANDARDS FIRST.**
