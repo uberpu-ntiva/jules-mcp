@@ -655,7 +655,7 @@ class JulesAPITester:
                 }
 
             # Test branch name generation
-            branch1 = workflow.generate_branch_name("test task one", id1)
+            branch1 = workflow.generate_unique_branch_name("test task one", id1)
             time.sleep(0.1)
             branch2 = workflow.generate_unique_branch_name("test task two", id2)
 
