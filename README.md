@@ -85,33 +85,57 @@ Add to your `claude_desktop_config.json`:
 }
 ```
 
-## Usage with Claude Desktop
+## MCP Tools & Resources
 
-Add to `claude_desktop_config.json`:
+### 🛠️ MCP Tools
+- **`jules_create_worker`** - Create Jules AI workers for specific implementation tasks
+- **`jules_generate_code`** - Generate code for specific requirements with context awareness
+- **`jules_fix_bug`** - Analyze and fix bugs in existing code
+- **`jules_review_code`** - Comprehensive code review with security and quality assessment
+- **`jules_get_status`** - Check worker status and progress
 
-```json
-{
-  "mcpServers": {
-    "jules-orchestrator": {
-      "command": "jules-mcp"
+### 📚 MCP Resources
+- **`jules_documentation://`** - Comprehensive documentation for all features
+- **`jules_templates://`** - Pre-built templates for common development patterns
+- **`jules_examples://`** - Real-world examples and implementation patterns
+- **`workers://all`** - View all active workers
+- **`worker://{session_id}/status`** - Individual worker status
+
+## Usage Examples
+
+### Basic Code Generation
+```python
+# Generate a React component
+result = await jules_mcp.call_tool("jules_generate_code", {
+    "prompt": "Create a React component for user login form with TypeScript",
+    "language": "typescript",
+    "context": {
+        "framework": "react",
+        "styling": "tailwind",
+        "validation": "yup"
     }
-  }
-}
+})
 ```
 
-## MCP Tools
+### Bug Fixing
+```python
+# Fix a memory leak in Node.js application
+result = await jules_mcp.call_tool("jules_fix_bug", {
+    "code": "existing-code-with-leak.js",
+    "error_description": "Memory usage increases over time",
+    "expected_behavior": "Constant memory usage"
+})
+```
 
-- `jules_create_worker` - Create new Jules worker session
-- `jules_send_message` - Send message to a worker
-- `jules_approve_plan` - Approve generated plan
-- `jules_cancel_session` - Cancel a worker
-- `jules_get_activities` - Get recent activities
-
-## MCP Resources
-
-- `workers://all` - View all active workers
-- `worker://{session_id}/status` - Worker status
-- `worker://{session_id}/activities` - Worker activities
+### Code Review
+```python
+# Review Python API endpoint
+result = await jules_mcp.call_tool("jules_review_code", {
+    "code": "api-endpoint.py",
+    "language": "python",
+    "focus_areas": ["security", "performance", "error_handling"]
+})
+```
 
 ## Prerequisites
 
