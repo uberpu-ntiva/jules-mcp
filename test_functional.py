@@ -69,23 +69,49 @@ def test_mcp_integration():
             del os.environ["JULES_API_KEY"]
 
 def test_server_configuration():
-    """Test server configuration loading"""
+    """Test server configuration loading from environment"""
     print("🔧 Testing server configuration...")
 
     try:
-        from jules_mcp.config import Config
+        # Test environment variable loading
+        test_config = {
+            "JULES_API_KEY": "test_key",
+            "JULES_API_BASE_URL": "https://test.jules.ai",
+            "JULES_API_VERSION": "v1test",
+            "WORKER_POLL_INTERVAL": "10",
+            "WORKER_STUCK_TIMEOUT": "600"
+        }
 
-        # Test default configuration
-        config = Config()
-        assert hasattr(config, 'timeout'), "Config should have timeout"
-        assert hasattr(config, 'max_retries'), "Config should have max_retries"
+        # Set test environment variables
+        for key, value in test_config.items():
+            os.environ[key] = value
 
-        print(f"  ✅ Configuration loaded with timeout={config.timeout}s")
+        # Import and test configuration
+        from jules_mcp.server import (
+            api_key, base_url, api_version,
+            poll_interval, stuck_timeout
+        )
+
+        assert api_key == "test_key", "API key should be loaded from env"
+        assert base_url == "https://test.jules.ai", "Base URL should be loaded from env"
+        assert api_version == "v1test", "API version should be loaded from env"
+        assert poll_interval == 10, "Poll interval should be loaded from env"
+        assert stuck_timeout == 600, "Stuck timeout should be loaded from env"
+
+        print(f"  ✅ Configuration loaded successfully")
+        print(f"    - API URL: {base_url}")
+        print(f"    - API Version: {api_version}")
+        print(f"    - Poll Interval: {poll_interval}s")
 
         return True
     except Exception as e:
         print(f"  ❌ Configuration test failed: {e}")
         return False
+    finally:
+        # Clean up test environment variables
+        for key in test_config:
+            if key in os.environ:
+                del os.environ[key]
 
 def test_mcp_tools_structure():
     """Test MCP tools structure without initialization"""
