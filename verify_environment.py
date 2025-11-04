@@ -71,7 +71,8 @@ def main():
     print(f"\n🔄 Git Repository: {run_command('git rev-parse --is-inside-work-tree 2>/dev/null || echo \"NO - Not a git repository\"')}")
 
     # Check network access (limited test)
-    print(f"\n🌐 Network Test: {run_command('ping -c 1 google.com 2>/dev/null | grep \"bytes from\" || echo \"Network access limited\")'}")
+    network_test = run_command('ping -c 1 google.com 2>/dev/null | grep "bytes from" || echo "Network access limited"')
+    print(f"\n🌐 Network Test: {network_test}")
 
     # Check file permissions
     test_file = Path('claude_test_permissions')
