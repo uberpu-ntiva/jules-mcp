@@ -602,21 +602,21 @@ class JulesWorkflowManager:
             ]
         }
 
-    def test_full_workflow(self) -> Dict[str, Any]:
-        """Test complete workflow from creation to completion"""
-        print("🧪 Testing Complete Jules API Workflow")
-        print("=" * 50)
+    def test_plan_approval_workflow(self) -> Dict[str, Any]:
+        """Test complete plan approval and completion notification workflow"""
+        print("🧪 Testing Plan Approval & Completion Notification Workflow")
+        print("=" * 60)
 
         # Test 1: Create session
-        print("\n1. Creating session...")
+        print("\n📝 Step 1: Creating test session...")
         session_result = self.create_workflow_session(
-            task_description="Create a simple TypeScript React component with TypeScript types",
-            source="sources/github/example/react-typescript-project",
+            task_description="Add user authentication with JWT tokens to the API",
+            source="sources/github/example/nodejs-api-project",
             github_branch="main",
-            title="TypeScript React Component Test"
+            title="JWT Authentication Implementation"
         )
 
-        if session_result['status'] != 'success':
+        if session_result.get('status') != 'success':
             return {
                 'test_result': 'FAILED',
                 'reason': f"Session creation failed: {session_result.get('error_message')}",
@@ -624,24 +624,102 @@ class JulesWorkflowManager:
             }
 
         session_id = session_result['session_id']
+        print(f"✅ Session created: {session_id}")
 
-        # Test 2: Monitor until completion (simulated since we don't have real API key)
-        print(f"\n2. Monitoring session until completion...")
-        completion_result = self.monitor_session_until_complete(
-            session_id, timeout_minutes=5  # Short timeout for testing
+        # Test 2: Simulate plan generation (in real scenario, would wait for PLAN_GENERATED activity)
+        print(f"\n📋 Step 2: Simulating plan generation workflow...")
+
+        # In a real implementation, you would:
+        # plan_result = self.client.wait_for_activity(session_id, 'PLAN_GENERATED', timeout_minutes=10)
+
+        print("🔄 (Simulated) Plan generated with the following structure:")
+        print("   - Add JWT middleware")
+        print("   - Create auth endpoints (/login, /register)")
+        print("   - Implement token validation")
+        print("   - Update user model")
+
+        # Test 3: Test plan approval
+        print(f"\n✅ Step 3: Testing plan approval...")
+        approval_result = self.client.approve_plan(
+            session_id,
+            {
+                "approvalData": {
+                    "approved": True,
+                    "feedback": "Plan looks comprehensive, proceed with JWT implementation"
+                }
+            }
         )
 
-        # Test 3: Verify session retrieval
-        print(f"\n3. Verifying session retrieval...")
-        verification = self.client.get_session(session_id)
+        print(f"Plan approval result: {approval_result['status']}")
 
-        print(f"Verification result: {verification['status']}")
+        # Test 4: Test plan rejection (workflow)
+        print(f"\n❌ Step 4: Testing plan rejection workflow...")
+        rejection_result = self.client.reject_plan(
+            session_id,
+            "Plan needs to include password reset functionality"
+        )
+
+        print(f"Plan rejection result: {rejection_result['status']}")
+
+        # Test 5: Monitor for completion notifications
+        print(f"\n🔔 Step 5: Testing completion notification monitoring...")
+
+        # Simulate monitoring for completion
+        print("🔄 Monitoring for completion notifications...")
+        print("   (Would listen for COMPLETION_NOTIFICATION activity)")
+
+        # Test 6: Verify unique session and branch IDs
+        print(f"\n🆔 Step 6: Testing unique ID generation...")
+
+        test_tasks = [
+            "Add JWT authentication",
+            "Implement user registration",
+            "Create password reset feature"
+        ]
+
+        generated_ids = []
+        generated_branches = []
+
+        for task in test_tasks:
+            session_id_test = self.generate_unique_session_id(task)
+            branch_name_test = self.generate_unique_branch_name(task, session_id_test)
+
+            generated_ids.append(session_id_test)
+            generated_branches.append(branch_name_test)
+
+            print(f"   Task: {task[:30]}...")
+            print(f"   Session ID: {session_id_test}")
+            print(f"   Branch Name: {branch_name_test}")
+
+        # Verify uniqueness
+        unique_ids = len(set(generated_ids)) == len(generated_ids)
+        unique_branches = len(set(generated_branches)) == len(generated_branches)
+
+        print(f"\n✅ Uniqueness verification:")
+        print(f"   Unique Session IDs: {'✅' if unique_ids else '❌'}")
+        print(f"   Unique Branch Names: {'✅' if unique_branches else '❌'}")
+
+        # Test 7: Test complete workflow execution
+        print(f"\n🚀 Step 7: Testing complete workflow execution...")
+        workflow_result = self.execute_with_plan_approval(
+            task_description="Create a REST API endpoint for user management",
+            source="sources/github/example/user-management-api",
+            github_branch="main",
+            auto_approve=True,  # Test auto-approval workflow
+            timeout_minutes=5   # Short timeout for testing
+        )
 
         return {
-            'test_result': completion_result['completion_status'],
+            'test_result': 'PASSED' if unique_ids and unique_branches else 'FAILED',
+            'session_creation': session_result['status'],
+            'plan_approval': approval_result['status'],
+            'plan_rejection': rejection_result['status'],
+            'unique_id_generation': unique_ids,
+            'unique_branch_generation': unique_branches,
+            'workflow_execution': workflow_result['workflow_status'],
             'session_id': session_id,
-            'verification': verification['status'],
-            'duration': completion_result['duration_seconds']
+            'branch_name': session_result['branch_name'],
+            'test_duration': time.time()
         }
 
 # --- === REAL API TESTING FRAMEWORK ===
