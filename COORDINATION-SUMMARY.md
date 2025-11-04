@@ -251,16 +251,18 @@ tests/feature/service.test.ts
 
 ## Key Documents Created
 
-1. **`JULES.md`**
-   - Purpose: Jules AI agent guidelines
-   - Contains: Rules, standards, templates, examples
-   - Used by: Claude when creating Jules tasks
-   - Location: `/workspace/cmhjwelrp01t8r7im3ysx2nl8/jules-mcp/JULES.md`
-
-2. **`AGENTS.md` (Updated)**
-   - Added: Claude + Jules coordination section
-   - Contains: Role division, workflow, auth clarification
+1. **`AGENTS.md` (Primary - Jules Reads This)**
+   - Contains: Complete Jules AI guidelines integrated
+   - Section: "Jules AI Guidelines (REQUIRED READING)"
+   - Includes: Self-review checklist, code standards, communication protocol
+   - Used by: Jules reads this when working on jules-mcp service
    - Location: `/workspace/cmhjwelrp01t8r7im3ysx2nl8/jules-mcp/AGENTS.md`
+
+2. **`JULES.md` (Supplementary)**
+   - Purpose: Extended examples and templates for humans/Claude
+   - Contains: Detailed task examples, full templates
+   - Used by: Claude for reference when creating tasks
+   - Location: `/workspace/cmhjwelrp01t8r7im3ysx2nl8/jules-mcp/JULES.md`
 
 3. **`examples/claude-jules-workflow-example.py`**
    - Purpose: Working example of complete workflow
