@@ -781,6 +781,12 @@ class JulesAPITester:
         all_tests_passed &= workflow_test['passed']
         self.test_results.append(workflow_test)
 
+        # Test 8: Plan Approval & Completion Notification Workflow
+        print(f"\n8. Testing Plan Approval & Completion Notifications...")
+        plan_approval_test = self.test_plan_approval_notifications()
+        all_tests_passed &= plan_approval_test['passed']
+        self.test_results.append(plan_approval_test)
+
         print(f"\n" + "=" * 50)
         print(f"Comprehensive Test Results:")
         print(f"  Overall: {'✅' if all_tests_passed else '❌'}")
