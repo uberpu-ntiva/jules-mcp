@@ -108,7 +108,7 @@ JULES_API_KEY=AQ.Ab8RN6IjejxlqvM0TAGt5bhWZeMJf9PFwuKBs-dqj9rARpcOPA
 
 ### Task Creation Template
 
-When Claude creates a Jules worker, include Jules guidelines:
+When Claude creates a Jules worker, reference the guidelines in AGENTS.md:
 
 ```python
 await jules_mcp.call_tool("jules_create_worker", {
@@ -116,17 +116,21 @@ await jules_mcp.call_tool("jules_create_worker", {
     [Feature/bug description]
 
     ## Jules Guidelines (REQUIRED)
-    See /workspace/cmhjwelrp01t8r7im3ysx2nl8/jules-mcp/JULES.md
+    Read the "Jules AI Guidelines" section in AGENTS.md before starting.
 
-    SELF-REVIEW REQUIRED:
-    ✅ Code quality, security, tests, performance
-    ✅ All edge cases handled
-    ✅ Follows existing patterns
-    ✅ Ready for human review
+    SELF-REVIEW CHECKLIST REQUIRED:
+    ✅ Security: No secrets, input validation, SQL injection prevention
+    ✅ Code Quality: Follows patterns, functions <50 lines, no duplication
+    ✅ Testing: ≥80% coverage, all tests passing
+    ✅ Performance: No N+1, proper async, caching where needed
+    ✅ Error Handling: Try/catch, proper logging, user-friendly messages
+    ✅ Edge Cases: All handled (auth failures, validation, external services)
+    ✅ Completeness: All requirements met, no TODOs, ready for review
 
     ## Reference Documents
     - planning.md: Complete specifications
     - src/existing/similar.ts: Pattern to follow
+    - AGENTS.md: Your guidelines and standards
     """,
     "source": "sources/github/company/repo",
     "title": "Feature name"
