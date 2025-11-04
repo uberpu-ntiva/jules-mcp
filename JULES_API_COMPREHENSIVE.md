@@ -386,7 +386,7 @@ class JulesAPITester:
     """Comprehensive API testing framework"""
 
     def __init__(self, config: Optional[JulesConfig] = None):
-        self.config = config or JulesAPIConfig()
+        self.config = config or JulesConfig()
         self.client = JulesAPIClient(config)
         self.test_results = []
 
