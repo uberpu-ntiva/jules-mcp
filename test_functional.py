@@ -37,9 +37,8 @@ def test_mcp_integration():
     try:
         # Mock environment for testing
         os.environ["JULES_API_KEY"] = "test_key_for_mcp_validation"
-        os.environ["JULES_API_URL"] = "https://api.jules.ai"
 
-        from jules_mcp.server import mcp, JulesAPI
+        from jules_mcp.server import mcp, JulesAPIClient
 
         # Check MCP server instance
         assert hasattr(mcp, 'name'), "MCP server should have name attribute"
@@ -51,10 +50,14 @@ def test_mcp_integration():
 
         print(f"  ✅ MCP server initialized with {tools_count} tools")
 
-        # Test JulesAPI initialization
-        api = JulesAPI()
+        # Test JulesAPIClient initialization
+        api = JulesAPIClient(
+            api_key="test_key_for_mcp_validation",
+            base_url="https://jules.googleapis.com",
+            api_version="v1alpha"
+        )
         assert api.api_key == "test_key_for_mcp_validation", "API key should be set"
-        print("  ✅ JulesAPI client initialized successfully")
+        print("  ✅ JulesAPIClient initialized successfully")
 
         return True
     except Exception as e:
@@ -62,9 +65,8 @@ def test_mcp_integration():
         return False
     finally:
         # Clean up test environment
-        for key in ["JULES_API_KEY", "JULES_API_URL"]:
-            if key in os.environ:
-                del os.environ[key]
+        if "JULES_API_KEY" in os.environ:
+            del os.environ["JULES_API_KEY"]
 
 def test_server_configuration():
     """Test server configuration loading"""
