@@ -20,14 +20,10 @@ def test_server_imports():
     print("🔧 Testing server imports...")
 
     try:
-        from jules_mcp.server import JulesAPI, WorkerManager
+        from jules_mcp.server import mcp, JulesAPIClient, WorkerManager
         print("  ✅ Core server classes imported successfully")
 
-        from jules_mcp.models import Plan, Worker
-        print("  ✅ Pydantic models imported successfully")
-
-        from jules_mcp.config import Config
-        print("  ✅ Configuration module imported successfully")
+        print("  ✅ MCP server imported successfully")
 
         return True
     except ImportError as e:
