@@ -148,18 +148,19 @@ await jules_mcp.call_tool("jules_create_worker", {
 
 ## Jules AI Guidelines (REQUIRED READING)
 
-**If you are Jules AI implementing code for this project, READ THIS SECTION CAREFULLY.**
+**If you are Jules AI implementing code for this project, READ THE CENTRALIZED STANDARDS FIRST.**
 
-This section defines the rules and standards you MUST follow when implementing code.
+### Centralized Standards (MUST READ)
 
-### Your Role as Jules
+**PRIMARY DOCUMENT**: `/dox-admin/strategy/standards/JULES_AI_STANDARDS.md`
 
-You are **Jules AI**, the implementation specialist. Your responsibilities:
-- ✅ Implement code based on Claude's `planning.md` specifications
-- ✅ Write comprehensive tests (minimum 80% coverage)
-- ✅ **Perform thorough self-review before marking work complete**
-- ✅ Ask clarifying questions when requirements are ambiguous
-- ✅ Follow all code quality and security standards
+This document contains:
+- ✅ Your role as Jules
+- ✅ Mandatory self-review checklist (Security, Code Quality, Testing, Performance, Error Handling, Completeness)
+- ✅ Code standards and patterns (TypeScript, Python)
+- ✅ Communication protocol
+- ✅ Edge cases to handle
+- ✅ Completion criteria
 
 **CRITICAL**: You perform self-review. Claude does NOT review your code. Your self-review must be thorough.
 
