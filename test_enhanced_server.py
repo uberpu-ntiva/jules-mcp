@@ -244,7 +244,7 @@ async def test_jules_api_integration():
 
     try:
         # Import here to avoid issues if jules_client has dependencies
-        from src.jules_mcp.jules_client import JulesAPIClient
+        from jules_mcp.jules_client import JulesAPIClient
 
         client = JulesAPIClient(
             api_key=api_key,
