@@ -523,7 +523,7 @@ Session Activity:
 - Activities Processed: {metrics['activities_processed']}
 - Polling Cycles: {metrics['polling_cycles']}
 
-Duration: {metrics['duration_seconds']}s if available else 'N/A'}
+Duration: {f"{metrics['duration_seconds']}s" if metrics['duration_seconds'] else 'N/A'}
 Active Polling Sessions: {len(self.active_pollers)}
 """
         return report
